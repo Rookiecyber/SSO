@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<title>登录</title>
+<body>
+
+<form action="/dologin", method="post">
+    账号:<br>
+    <input type="text" name="username" placeholder="账号 ">
+    <br>
+    密码:<br>
+    <input type="text" name="password" placeholder="密码">
+    <br><br>
+    <input type="submit" value="登录">
+</form>
+<p>账号：admin 密码：123</p>
+<h3 th:text="${data1}"></h3>
+<h3 th:text="${data2}"></h3>
+</body>
+</html>
