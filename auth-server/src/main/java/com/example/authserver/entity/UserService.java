@@ -1,8 +1,11 @@
 package com.example.authserver.entity;
 
 
+import java.util.List;
+
 public interface UserService {
 
-    Boolean login(User user);
+    public boolean login(User user);
+    public List<User> getList();
 }
 

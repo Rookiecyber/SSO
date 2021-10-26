@@ -8,41 +8,59 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.authserver.entity.User;
 
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class JwtUtil {
-//    private static final  String TOKEN_SECRET = "jiami";
-    private static final  long TIME_OUT = 86400;  //单位:S
+    private static final long EXPIRE_TIME= 15*60*1000;
+    private static final String TOKEN_SECRET="token123";  //密钥盐
 
-    public static String encode(User user) {
-        Algorithm algorithm = Algorithm.HMAC256(user.getPassword());
 
-        HashMap<String, Object> header = new HashMap<>(2);
-        header.put("typ", "JWT");
-        header.put("alg", "HS256");
-        String token = JWT.create()
-                .withHeader(header)
-                //设置过期时间
-                .withExpiresAt(new Date(System.currentTimeMillis() + TIME_OUT))
-                //设置负载
-                .withAudience(user.getUsername())
-                .sign(algorithm);
+    /**
+     * 签名生成
+     * @param user
+     * @return
+     */
+    public static String sign(User user){
+
+        String token = null;
+        try {
+            Date expiresAt = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+            token = JWT.create()
+                    .withIssuer("auth0")
+                    .withClaim("username", user.getUsername())
+                    .withExpiresAt(expiresAt)
+                    // 使用了HMAC256加密算法。
+                    .sign(Algorithm.HMAC256(TOKEN_SECRET));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return token;
+
     }
-//    public static Map<String, String> decode(String token) throws Exception {
-//        DecodedJWT jwt = null;
-//        Map<String, Claim> map;
-//        try {
-//            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET)).build();
-//            jwt = verifier.verify(token);
-//            map=jwt.getClaims();
-//        } catch (Exception e) {
-//            throw new Exception("鉴权失败");
-//        }
-//        Map<String, String> resultMap = new HashMap<>(map.size());
-//        map.forEach((k, v) -> resultMap.put(k, v.asString()));
-//        return resultMap;
-//    }
+
+
+    /**
+     * 签名验证
+     * @param token
+     * @return
+     */
+    public static boolean verify(String token){
+
+
+        try {
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET)).withIssuer("auth0").build();
+            DecodedJWT jwt = verifier.verify(token);
+            System.out.println("认证通过：");
+            System.out.println("issuer: " + jwt.getIssuer());
+            System.out.println("username: " + jwt.getClaim("username").asString());
+            System.out.println("过期时间：      " + jwt.getExpiresAt());
+            return true;
+        } catch (Exception e){
+            return false;
+        }
+
+    }
 }

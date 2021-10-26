@@ -1,58 +1,50 @@
 package com.example.authserver.interceptor;
 
-import com.alibaba.fastjson.JSON;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.example.authserver.annotation.LoginRequired;
-import com.example.authserver.util.CookieUtil;
+import com.example.authserver.util.JwtUtil;
+import org.springframework.web.servlet.HandlerInterceptor;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.DateFormat;
-import java.util.HashMap;
+import java.io.PrintWriter;
 
-public class AuthInterceptor extends HandlerInterceptorAdapter {
+public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        LoginRequired methodAnnotation = handlerMethod.getMethodAnnotation(LoginRequired.class);//获取请求中有没有带此注解类
-        if (methodAnnotation == null) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                             Object handler) throws Exception {
+        if(request.getMethod().equals("OPTIONS")){
+            response.setStatus(HttpServletResponse.SC_OK);
             return true;
         }
-        String token = request.getHeader("token");
-        if (token == null) {
-            throw new RuntimeException("无token，请重新登录");
+
+        response.setCharacterEncoding("utf-8");
+
+        String token = request.getHeader("admin-token");
+        if(token != null){
+            boolean result = JwtUtil.verify(token);
+            if(result){
+                System.out.println("token:"+token);
+                System.out.println("通过拦截器");
+                return true;
+            }
         }
-        // 获取 token 中的 username
-        String username;
-        try {
-            username = JWT.decode(token).getAudience().get(0);
-        } catch (JWTDecodeException jwtDecodeException) {
-            throw new RuntimeException("401");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        PrintWriter out = null;
+        try{
+            JSONObject json = new JSONObject();
+            json.put("success","false");
+            json.put("msg","认证失败，未通过拦截器");
+            json.put("code","50000");
+            response.getWriter().append(json.toJSONString());
+            System.out.println("认证失败，未通过拦截器");
+        }catch (Exception e){
+            e.printStackTrace();
+            response.sendError(500);
+            return false;
         }
-        //验证token
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256("123")).build();
-        try {
-            jwtVerifier.verify(token);
-        } catch (JWTVerificationException e) {
-            throw new RuntimeException("401");
-        }
-        return true;
+        return false;
     }
-    }
+}
+
