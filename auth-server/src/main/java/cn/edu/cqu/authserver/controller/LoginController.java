@@ -56,13 +56,15 @@ public class LoginController {
         Cookie[] cookies= httpServletRequest.getCookies();
         for(Cookie cookie :cookies){
             if(cookie.getName().equals("token")){
-                //设置ck的过期时间为0
+                //设置ck的过期时间为0并且清空token
+                cookie =new Cookie("token",null);
                 cookie.setPath("/");
-                cookie.setValue("0");
-                cookie.setMaxAge(-60);
-                System.out.println("ck的过期时间为"+cookie.getMaxAge());
+                cookie.setMaxAge(0);
+                httpServletResponse.addCookie(cookie);
+//                System.out.println("ck的过期时间为"+cookie.getMaxAge());
             }
         }
+
         return "login";
     }
 }
