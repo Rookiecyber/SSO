@@ -18,8 +18,8 @@
     </properties>
     <packaging>pom</packaging>
     <modules>
-        <module>app1</module>
-        <module>app2</module>
+<!--        <module>app1</module>-->
+<!--        <module>app2</module>-->
         <module>auth-server</module>
     </modules>
 <!--    <dependencies>-->

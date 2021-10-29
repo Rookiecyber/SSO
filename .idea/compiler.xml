@@ -7,8 +7,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="app2" />
-        <module name="app1" />
         <module name="auth-server" />
       </profile>
     </annotationProcessing>
