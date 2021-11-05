@@ -32,7 +32,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.example</groupId>
+            <groupId>cn.edu.cqu</groupId>
             <artifactId>auth-server</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
@@ -50,6 +50,12 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>auth-server</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.edu.cqu</groupId>
             <artifactId>auth-server</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
